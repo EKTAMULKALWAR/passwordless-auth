@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passwordless Sign-in</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Passwordless Authentication</h1>
+  
+  <form id="signInForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+    <button type="submit">Send Sign-in Link</button>
+  </form>
+
+  <div id="status"></div>
+
+  <script>
+    // Step 2: Handling the form submission
+    document.getElementById('signInForm').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Prevent the default form submission behavior
+
+      const email = document.getElementById('email').value;
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerHTML = 'Sending sign-in link...'; // Show a loading message
+
+      try {
+        // Step 3: Sending the POST request to the backend
+        const response = await fetch('http://localhost:3000/api/send-sign-in-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email }) // Send the email in the request body
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Step 4: Display a success message
+          statusDiv.innerHTML = `Sign-in link sent to ${email}. Please check your inbox!`;
+        } else {
+          // Step 5: Handle any errors
+          statusDiv.innerHTML = `Error: ${data.message}`;
+        }
+      } catch (error) {
+        // Step 5: Handle network errors
+        console.error('Error sending email link:', error);
+        statusDiv.innerHTML = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>
